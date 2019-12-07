@@ -12,8 +12,13 @@ namespace WebApi.Controllers
     public class AlbumesController : ControllerBase
     {
         private readonly IGenericRepository<Album> _genericRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public AlbumesController(IGenericRepository<Album> genericRepository) => _genericRepository = genericRepository;  
+        public AlbumesController(IGenericRepository<Album> genericRepository, IUnitOfWork unitOfWork) 
+        {
+            this._genericRepository = genericRepository;
+            this._unitOfWork = unitOfWork;
+        } 
 
         [HttpGet]
         public async Task<IEnumerable<Album>> Get()
@@ -29,8 +34,11 @@ namespace WebApi.Controllers
                 return BadRequest();
             }
 
-            await _genericRepository.CreateAsync(album);
-            
+            var created = await _genericRepository.CreateAsync(album);
+
+            if(created)
+                _unitOfWork.Commit();
+
             return Created("Created", new { Response = StatusCode(201) });
         }
     }

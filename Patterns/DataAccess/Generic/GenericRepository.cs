@@ -66,11 +66,8 @@ namespace DataAccess.Generic
             {
                 var save = await _unitOfWork.Context.Set<T>().AddAsync(entity);
 
-                if (save != null)
-                {
-                    _unitOfWork.Commit();
-                    created = true;
-                }
+                if (save != null)                                  
+                    created = true;                
             }
             catch (Exception)
             {
